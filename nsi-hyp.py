@@ -44,8 +44,8 @@ def moyenne(lst):
     if len(lst) == 0:
         return None
     sum = 0
-    for a in range(len(lst)):
-        sum += lst[a]
+    for a in lst:
+        sum += a
     return round(sum/len(lst), 3)
 
 #Calcul de la mediane d'une liste
