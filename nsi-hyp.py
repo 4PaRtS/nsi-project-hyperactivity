@@ -39,32 +39,6 @@ class Windows(Thread):
         except KeyboardInterrupt:
             self.s.close()
 
-#calcul de la moyenne en fonction d'une liste
-def moyenne(lst):
-    if len(lst) == 0:
-        return None
-    sum = 0
-    for a in lst:
-        sum += a
-    return round(sum/len(lst), 3)
-
-#Calcul de la mediane d'une liste
-def mediane(lst):
-    lst.sort()
-    l_len = len(lst)
-    if l_len < 1:
-        return None
-    if l_len % 2 == 0 :
-        return round((lst[int(l_len/2 - 2)] + lst[int(l_len/2 - 1)]) /2, 3)
-    else:
-        return round(lst[int((l_len) /2 - 0.5)], 3)
-
-#renvoie le contenu d'une valeur contenue dans un fichier .csv
-def csv_reader(ind, file):
-    search = csv.DictReader(open(file, 'r'))
-    s = [dict(l) for l in search]
-    return s[0].get(ind)
-
 #classe héritée de App()
 class Hype(App):
     def __init__(self, time=300, nb_imgs=20, proba_forte=40, proba_faible=10, fieldsnames=["Moyenne", "Mediane", "Avant", "Apres", "Dessus"], img_list=["img/dog.png", "img/car.png", "img/cat.png", "img/dog.png", "img/flower.png", "img/house.png", "img/tree.png"], save=False):
@@ -157,14 +131,14 @@ class Hype(App):
         self.p.visible = self.text_escape.visible = self.text_img.visible = self.cadre1.visible = self.cadre2.visible = self.cadre3.visible = self.cadre4.visible = self.cadre5.visible = False
         #dictionnaire des valeurs (plus simple à visualiser)
         self.valeurs.append({
-            "Moyenne": moyenne(self.lst_times),
-            "Mediane": mediane(self.lst_times),
+            "Moyenne": Hype.moyenne(self.lst_times),
+            "Mediane": Hype.mediane(self.lst_times),
             "Avant": self.nb_avant,
             "Apres": self.nb_apres,
             "Dessus": self.nb_good
         })
         text = "Temps de réaction moyen: {}\nTemps de réaction median: {}\nNombre de cliks avant: {}\nNombre de cliks après: {}\nNombre de cliks dessus: {}".format(
-            moyenne(self.lst_times, self.nb_good), mediane(self.lst_times), self.nb_avant, self.nb_apres, self.nb_good
+            Hype.moyenne(self.lst_times), Hype.mediane(self.lst_times), self.nb_avant, self.nb_apres, self.nb_good
         )
         #enregistrement du dictionnaire dans fichier .csv au nom de l'enfant
         if self.save:
@@ -273,7 +247,7 @@ class Hype(App):
         self.info("Info", "Le fichier a été\ncorrectement téléchargé")
 
         text = file_name[4:-4] + " :Temps de réaction moyen: {}\nTemps de réaction median: {}\nNombre de cliks avant: {}\nNombre de cliks après: {}\nNombre de cliks dessus: {}".format(
-            csv_reader(self.fieldsnames[0], file_name), csv_reader(self.fieldsnames[1], file_name), csv_reader(self.fieldsnames[2], file_name), csv_reader(self.fieldsnames[3], file_name), csv_reader(self.fieldsnames[4], file_name)
+            Hype.csv_reader(self.fieldsnames[0], file_name), Hype.csv_reader(self.fieldsnames[1], file_name), Hype.csv_reader(self.fieldsnames[2], file_name), Hype.csv_reader(self.fieldsnames[3], file_name), Hype.csv_reader(self.fieldsnames[4], file_name)
         )
         self.affich_d = Text(self, text=text, grid=[0, 0])
 
@@ -282,6 +256,36 @@ class Hype(App):
         try:
             self.Text_widg.visible = self.ButtonWidg.visible = self.restart.visible = self.affich_d.visible = False
         except:pass
+
+    # calcul de la moyenne en fonction d'une liste
+    @staticmethod
+    def moyenne(lst):
+        if len(lst) == 0:
+            return None
+        sum = 0
+        for a in lst:
+            sum += a
+        return round(sum / len(lst), 3)
+
+    # Calcul de la mediane d'une liste
+    @staticmethod
+    def mediane(lst):
+        lst.sort()
+        l_len = len(lst)
+        if l_len < 1:
+            return None
+        if l_len % 2 == 0:
+            return round((lst[int(l_len / 2 - 2)] + lst[int(l_len / 2 - 1)]) / 2, 3)
+        else:
+            return round(lst[int((l_len) / 2 - 0.5)], 3)
+
+    # renvoie le contenu d'une valeur contenue dans un fichier .csv
+    @staticmethod
+    def csv_reader(ind, file):
+        search = csv.DictReader(open(file, 'r'))
+        s = [dict(l) for l in search]
+        return s[0].get(ind)
+
 
 if __name__ == "__main__":
     #si se fichier n'a pas été importé
@@ -296,5 +300,5 @@ if __name__ == "__main__":
     }
 
     #creation de la fenètre avec certains paramètres personnalisables
-    app_hyp = Hype(time=300, nb_imgs=50, proba_faible=10, proba_forte=40, save=True)
+    app_hyp = Hype(time=300, nb_imgs=10, proba_faible=10, proba_forte=40, save=True)
     app_hyp.display()
